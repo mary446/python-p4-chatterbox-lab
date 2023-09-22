@@ -37,9 +37,20 @@ class TestApp:
         '''returns a list of JSON objects for all messages in the database.'''
         with app.app_context():
             response = app.test_client().get('/messages')
-            records = Message.query.all()
+             # Print the response content for debugging
+            print(response.get_data(as_text=True))
 
-            for message in response.json:
+        # Assert that the response status code is 200
+            assert response.status_code == 200
+
+             # Check if response.json is None
+        if response.json is None:
+            assert False, "Response does not contain valid JSON data"
+
+
+        records = Message.query.all()
+
+        for message in response.json:
                 assert(message['id'] in [record.id for record in records])
                 assert(message['body'] in [record.body for record in records])
 
